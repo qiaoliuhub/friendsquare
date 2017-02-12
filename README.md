@@ -6,17 +6,20 @@
 
 Friendsquare is an application to suggest friend to users based on similar user behavior information. The website displays real-time updated suggested friends list for each user. This project is deployed on AWS platform and with following technologies:
 
--Apache Kafka
--Apache HDFS
--Spark
--Spark Streaming
--Apache Cassandra
--Flask
+- Apache Kafka
+- Apache HDFS
+- Spark
+- Spark Streaming
+- Apache Cassandra
+- Flask
 
 ## Friendsquare pipeline
 
 This pipeline can provide each user an interface to get friends suggestion based on historical and real-time updating users behaviors. Suggested friends are those who have most common venues visits with the querying user.
 
+<p align="center">
+  <img src="/images/pipeline.png" width="900"/>
+</p>
 
 ## Data Generation and Ingestion
 
@@ -30,9 +33,9 @@ Batch processsing has two steps:
 Batch processed results were directly written into cassandra with the spark-cassandra connector.
 
 sbt libarary dependencies:
--"org.apache.spark" %% "spark-sql" % "2.0.0" % "provided"
--"org.apache.spark" %% "spark-core" % "2.0.0" % "provided"
--"com.datastax.spark" %% "spark-cassandra-connector" % "2.0.0-M3"
+- "org.apache.spark" %% "spark-sql" % "2.0.0" % "provided"
+- "org.apache.spark" %% "spark-core" % "2.0.0" % "provided"
+- "com.datastax.spark" %% "spark-cassandra-connector" % "2.0.0-M3"
 
 ## Streaming processing
 
@@ -42,12 +45,12 @@ In streaming process, when a new checkin {"userid":"1674265", "venueid": 679489 
 3. For each user_user pair in table A (step 2), update number of common venues visits they have by adding 1 to the previous count.
 
 sbt libarary dependencies:
--"org.apache.spark" %% "spark-sql" % "2.0.0" % "provided"
--"org.apache.spark" %% "spark-core" % "2.0.0" % "provided"
--"com.datastax.spark" %% "spark-cassandra-connector" % "2.0.0-M3"
--"org.apache.spark" %% "spark-streaming" % "2.0.0" % "provided"
--"org.apache.spark" %% "spark-streaming-kafka-0-8" % "2.0.0"
--"com.github.benfradet" %% "spark-kafka-0-10-writer" % "0.2.0"
+- "org.apache.spark" %% "spark-sql" % "2.0.0" % "provided"
+- "org.apache.spark" %% "spark-core" % "2.0.0" % "provided"
+- "com.datastax.spark" %% "spark-cassandra-connector" % "2.0.0-M3"
+- "org.apache.spark" %% "spark-streaming" % "2.0.0" % "provided"
+- "org.apache.spark" %% "spark-streaming-kafka-0-8" % "2.0.0"
+- "com.github.benfradet" %% "spark-kafka-0-10-writer" % "0.2.0"
 
 ## Cassandra schema
 
