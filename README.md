@@ -28,8 +28,8 @@ Streaming data is simulated with Kafka producer based on Foursquare user pool an
 ## Batch processing
 
 Batch processsing has two steps: 
-1. Store each checkin information into 'checkins' table in Cassandra. 
-2. Count how many common venues visits for each pair of users and store user_user_count information in Cassandra. 
+1.  Store each checkin information into 'checkins' table in Cassandra. 
+2.  Count how many common venues visits for each pair of users and store user_user_count information in Cassandra. 
 Batch processed results were directly written into cassandra with the spark-cassandra connector.
 
 sbt libarary dependencies:
@@ -40,9 +40,9 @@ sbt libarary dependencies:
 ## Streaming processing
 
 In streaming process, when a new checkin {"userid":"1674265", "venueid": 679489 ...} comes in, the following processes will be performed:
-1. Find out the user list who have visited the same venue ("venueid": 679489) before.
-2. Combine this userid with each userid in user list found in step 1 and construct user_user table A.
-3. For each user_user pair in table A (step 2), update number of common venues visits they have by adding 1 to the previous count.
+1.  Find out the user list who have visited the same venue ("venueid": 679489) before.
+2.  Combine this userid with each userid in user list found in step 1 and construct user_user table A.
+3.  For each user_user pair in table A (step 2), update number of common venues visits they have by adding 1 to the previous count.
 
 sbt libarary dependencies:
 - "org.apache.spark" %% "spark-sql" % "2.0.0" % "provided"
@@ -55,8 +55,8 @@ sbt libarary dependencies:
 ## Cassandra schema
 
 Tables:
-1. checkins: table storing histrical and new user checkin activities
-2. user_friend and user_count: table storing number of common venues visits each user_user pair have
+1.  checkins: table storing histrical and new user checkin activities
+2.  user_friend and user_count: table storing number of common venues visits each user_user pair have
 ```
 CREATE TABLE checkins (userid int, venueid int, PRIMARY KEY(venueid, userid));
 --use userid, friendid to find out number of common venues visits they have
