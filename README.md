@@ -4,6 +4,8 @@
 
 [www.friendsquare.info](https://www.friendsquare.info)
 
+[Presentation](https://www.slideshare.net/secret/97d9OBMr9mYDxb)
+
 Friendsquare is an application to suggest friend to users based on similar user behavior information. The website displays real-time updated suggested friends list for each user. This project is deployed on AWS platform and with following technologies:
 
 - Apache Kafka
