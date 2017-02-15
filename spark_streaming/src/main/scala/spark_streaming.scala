@@ -25,7 +25,7 @@ object spark_streaming {
     val topicsSet = topics.split(",").toSet
 
     // Create context with 5 second batch interval
-    val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host","172.31.0.204")
+    val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host", args(1))
     val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sc, Seconds(10))
 

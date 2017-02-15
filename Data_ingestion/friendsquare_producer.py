@@ -28,12 +28,12 @@ class Producer(object):
         new_time = datetime.now()
         msg_cnt = 0
         while True:
-            if ((msg_cnt%40)!=0):
+            if ((msg_cnt%4000)!=0):
                 userid=int(random.choice(self.userslist))
                 venueid=int(random.choice(self.venueslist))
             else:
-                userid=int(random.choice(self.userslist[0:1000]))
-                venueid=int(random.choice(self.venueslist[0:500]))
+                userid=int(random.choice(self.userslist[0:50000]))
+                venueid=int(random.choice(self.venueslist[0:25000]))
             rating= random.randint(0,5)
             randomdelta = np.random.normal(3, 3, 1)[0]
             new_time += timedelta (seconds = randomdelta)
@@ -43,7 +43,7 @@ class Producer(object):
             print message_info
             self.producer.send_messages('Friendsquare', partitionkey, msg_info)
             msg_cnt += 1
-            time.sleep(0.03)
+            #time.sleep(0.02)
 
 if __name__ == "__main__":
     args = sys.argv
