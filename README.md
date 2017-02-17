@@ -2,7 +2,7 @@
 
 ## Real time friends suggestion
 
-[www.friendsquare.info](www.friendsquare.info)
+[www.friendsquare.info](http://www.friendsquare.info/)
 
 [Presentation](https://www.slideshare.net/secret/97d9OBMr9mYDxb)
 
