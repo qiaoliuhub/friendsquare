@@ -19,6 +19,7 @@ import com.datastax.driver.core.{CodecRegistry, ResultSet, Row, TypeCodec}
 
 //Consume data from Kafka "Streaming_1" topic and updata Cassandra user_user_count database. This database saves information about how many same venues each user_user pair has been to.
 
+
 object second_consumer {
   def main(args: Array[String]) {
 
@@ -26,7 +27,8 @@ object second_consumer {
     val topics = "Streaming_1"
     val topicsSet = topics.split(",").toSet
 
-    // Create context with 10 second batch interval
+    // Create context with 10 second interval
+
     val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host",args(1))
                                    .set("spark.cassandra.connection.keep_alive_ms", "10000")
     val sc = new SparkContext(sparkConf)
