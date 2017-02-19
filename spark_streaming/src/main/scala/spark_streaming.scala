@@ -71,7 +71,7 @@ object spark_streaming {
       
       //Updated information that is ready to write to CassandraDB
       val mergeRDD = (incommonRDD ++ updateRDD).map(record => ((record.userid, record.friendid),record.count)).reduceByKey(_+_)
-                                                .map(record => Noincommon(record._1._1, record._2, record._1._2))
+                                                .map(record => Noincommon(record._1._1, record._2, record._1._2)).persist
         
       val undirectedRDD = (mergeRDD.map(record=>Noincommon (record.friendid, record.count, record.userid)) ++ mergeRDD).persist
       
