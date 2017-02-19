@@ -17,6 +17,8 @@ import com.datastax.driver.core.utils._
 import org.apache.spark.rdd._
 import com.datastax.driver.core.{CodecRegistry, ResultSet, Row, TypeCodec}
 
+//Consume data from Kafka "Streaming_1" topic and updata Cassandra user_user_count database. This database saves information about how many same venues each user_user pair has been to.
+
 object second_consumer {
   def main(args: Array[String]) {
 
@@ -24,15 +26,16 @@ object second_consumer {
     val topics = "Streaming_1"
     val topicsSet = topics.split(",").toSet
 
-    // Create context with 5 second batch interval
+    // Create context with 10 second batch interval
     val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host",args(1))
+                                   .set("spark.cassandra.connection.keep_alive_ms", "10000")
     val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sc, Seconds(10))
 
     // Create direct kafka stream with brokers and topics
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
     val json_messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
-
+                
     // Process each RDD and update CassandraDB
     json_messages.foreachRDD { rdd =>
       val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
@@ -40,7 +43,7 @@ object second_consumer {
         
       val incommonRDD=rdd.map(_._2).map( record => {
                                   val tokens = record.split(",")
-                                  Noincommon(tokens(0), tokens(1), tokens(2))})
+                                  Noincommon(tokens(0).toInt, tokens(1).toInt, tokens(2).toInt)})
         
       //Retrieve information that is needed to be updated from playground.user_friend
       val updateRDD = incommonRDD.joinWithCassandraTable("playground","user_friend").on(SomeColumns("userid", "friendid"))
@@ -61,7 +64,7 @@ object second_consumer {
       
       undirectedRDD.map(record=> flag(record.userid, record.count, record.friendid, 1)).saveToCassandra("playground","user_count", SomeColumns("userid", "count", "friendid", "flag"))
       
-      undirectedRDD.collect().foreach(println)
+      //undirectedRDD.collect().foreach(println)
 
     }
 
@@ -76,9 +79,11 @@ case class Noincommon (userid: Int, count: Int, friendid: Int){
 }
 
 case class flag(userid: Int, count: Int, friendid: Int, flag: Int)
-/** Lazily instantiated singleton instance of SQLContext */
-object SQLContextSingleton {
 
+object SQLContextSingleton {
+  
+  //Lazily instantiated singleton instance of SQLContext  
+    
   @transient  private var instance: SQLContext = _
 
   def getInstance(sparkContext: SparkContext): SQLContext = {
@@ -88,5 +93,4 @@ object SQLContextSingleton {
     instance
   }
 }
-/* Created by QiaoLiu1 on 1/31/17.*/
 

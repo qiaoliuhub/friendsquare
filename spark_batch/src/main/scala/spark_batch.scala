@@ -12,13 +12,12 @@ import org.apache.spark.sql.{Row,SaveMode}
 import org.apache.spark.sql.DataFrame
 import com.datastax.spark.connector._
 
+// Input historical data from hdfs and output joined and aggregated data to CassandraDB
+    
 object spark_batch {
   def main(args: Array[String]) {
 
-    val conf = new SparkConf(true).set("spark.cassandra.connection.host", args(1))
-    val sc = new SparkContext(conf)
-    val spark = SparkSession.builder().appName("Friendsquare").config("spark.cassandra.connection.host", args(1)).getOrCreate()
-    
+    val spark = SparkSession.builder().appName("Friendsquare").config("spark.cassandra.connection.host", args(1)).getOrCreate()    
     import spark.implicits._
 
     //Read information from hdfs and store as DataFrame
@@ -46,6 +45,8 @@ object spark_batch {
     user_user_unique.write.format("org.apache.spark.sql.cassandra").options(Map("table"->"user_friend","keyspace"->"playground")).mode(SaveMode.Append).save()
         
     user_user_unique.map(record=>sorted_common_visit(record.getAs[Int]("userid"), record.getAs[Int]("friendid"), record.getAs[Int]("count"), 1)).write.format("org.apache.spark.sql.cassandra").options(Map("table"->"user_count","keyspace"->"playground")).mode(SaveMode.Append).save()
+    
+    spark.stop()
     }
 }
 

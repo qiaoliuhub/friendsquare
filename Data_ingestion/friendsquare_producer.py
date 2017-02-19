@@ -24,6 +24,7 @@ class Producer(object):
         self.userslist = userslist[0:500000]
         self.venueslist = venueslist[0:250000]
 
+        
     def produce_msgs(self, partitionkey):
         new_time = datetime.now()
         msg_cnt = 0
@@ -32,8 +33,8 @@ class Producer(object):
                 userid=int(random.choice(self.userslist))
                 venueid=int(random.choice(self.venueslist))
             else:
-                userid=int(random.choice(self.userslist[0:50000]))
-                venueid=int(random.choice(self.venueslist[0:25000]))
+                userid=int(random.choice(self.userslist[0:500000]))
+                venueid=int(random.choice(self.venueslist[0:250000]))
             rating= random.randint(0,5)
             randomdelta = np.random.normal(3, 3, 1)[0]
             new_time += timedelta (seconds = randomdelta)
@@ -41,9 +42,9 @@ class Producer(object):
             message_info = {'partitionkey':partitionkey, 'userid':userid, 'venueid': venueid, 'created_at':created_time, 'rating': rating}
             msg_info = json.dumps(message_info)
             print message_info
-            self.producer.send_messages('Friendsquare', partitionkey, msg_info)
+            self.producer.send_messages('Friendsquare1', partitionkey, msg_info)
             msg_cnt += 1
-            #time.sleep(0.02)
+            time.sleep(0.01)
 
 if __name__ == "__main__":
     args = sys.argv

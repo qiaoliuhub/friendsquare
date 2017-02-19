@@ -17,15 +17,17 @@ import com.datastax.driver.core.utils._
 import org.apache.spark.rdd._
 import com.datastax.driver.core.{CodecRegistry, ResultSet, Row, TypeCodec}
 
+//Consume data from kafka "Friendsquare" topic, write checkins information and user_user_count information to Cassandra. user_user_count table saves information about how many same venues each user_user pair has been to
+
 object spark_streaming {
   def main(args: Array[String]) {
 
     val brokers = args(0)+":9092"
-    val topics = "Friendsquare"
+    val topics = "Friendsquare1"
     val topicsSet = topics.split(",").toSet
 
-    // Create context with 5 second batch interval
-    val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host", args(1))
+    // Create context with 10 second batch interval
+    val sparkConf = new SparkConf().setAppName("Friendsquare").set("spark.cassandra.connection.host", args(1)) .set("spark.cassandra.connection.keep_alive_ms", "10000")
     val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sc, Seconds(10))
 
@@ -52,7 +54,7 @@ object spark_streaming {
       import sqlContext.implicits._
       
       //Join rdd with playground.checkins table in CassandraDB based on column venueid
-      rdd.saveToCassandra("playground","checkins", SomeColumns("venueid", "userid"))
+      //rdd.saveToCassandra("playground","checkins", SomeColumns("venueid", "userid"))
       val incommonRDD = rdd.joinWithCassandraTable("playground","checkins").on(SomeColumns("venueid"))
                             .map(record=> Noincommon(record._1.userid, 1, record._2.get[Int]("userid"))
                                 ).filter(_.isValid).persist
@@ -64,6 +66,7 @@ object spark_streaming {
       
       //This information is needed to be removed from playground.user_count
       val removedRDD = updateRDD.map(record=>Noincommon (record.friendid, record.count, record.userid)) ++ updateRDD
+        
       removedRDD.map(record=> flag(record.userid, record.count, record.friendid, 0)).saveToCassandra("playground","user_count", SomeColumns("userid", "count", "friendid", "flag"))
       
       //Updated information that is ready to write to CassandraDB
@@ -76,7 +79,7 @@ object spark_streaming {
       
       undirectedRDD.map(record=> flag(record.userid, record.count, record.friendid, 1)).saveToCassandra("playground","user_count", SomeColumns("userid", "count", "friendid", "flag"))
       
-      undirectedRDD.collect().foreach(println)
+      //undirectedRDD.collect().foreach(println)
 
     }
 
@@ -97,10 +100,10 @@ case class Noincommon (userid: Int, count: Int, friendid: Int){
 }
 
 case class flag(userid: Int, count: Int, friendid: Int, flag: Int)
-/** Lazily instantiated singleton instance of SQLContext */
+//Lazily instantiated singleton instance of SQLContext
 object SQLContextSingleton {
 
-  @transient  private var instance: SQLContext = _
+  @transient private var instance: SQLContext = _
 
   def getInstance(sparkContext: SparkContext): SQLContext = {
     if (instance == null) {
@@ -109,6 +112,3 @@ object SQLContextSingleton {
     instance
   }
 }
-/* Created by QiaoLiu1 on 1/31/17.*/
-
-

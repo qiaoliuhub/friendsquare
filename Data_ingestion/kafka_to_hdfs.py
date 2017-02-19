@@ -82,7 +82,7 @@ if __name__ == '__main__':
     group = "Spark"
     topic = "Friendsquare"
     temp_dir = "/home/ubuntu/friendsquare/kafkadata"
-    max_count = 30
+    max_count = 90
     
     hdfs_consumer = HDFS_Consumer(hdfs_dir, max_count)
     hdfs_consumer.consume_topic(topic,group,temp_dir)
