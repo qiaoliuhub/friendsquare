@@ -25,7 +25,7 @@ This pipeline can provide each user an interface to get friends suggestion based
 
 ## Data Generation and Ingestion
 
-Streaming data is simulated with Kafka producer based on Foursquare user pool and venue pool in [foursquare_dataset 04/2012](https://archive.org/details/201309_foursquare_dataset_umn). Historical data was consumed with HDFS, blocked into 20MB and cached on HDFS. Streaming data was consumed with Spark_streaming with rate 300/s. This rate is set to be higher than average rate in archived foursquare_dataset 04/2012 (1.6/s) to stress streaming processing. Json format is like: {"userid": 1674265, "venueid": 679489, "rating": 2, "created_at": "2017-02-14 08:17:30"}
+Streaming data is simulated with Kafka producer based on Foursquare user pool and venue pool in [foursquare_dataset 04/2012](https://archive.org/details/201309_foursquare_dataset_umn). Historical data was consumed with HDFS, blocked into 20MB and cached on HDFS. Streaming data was consumed with Spark_streaming. Streaming rate is set to be higher than average rate in archived foursquare_dataset 04/2012 (100-300/s) to stress streaming processing. Json format is like: {"userid": 1674265, "venueid": 679489, "rating": 2, "created_at": "2017-02-14 08:17:30"}
 
 ## Batch processing
 
